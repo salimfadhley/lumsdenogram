@@ -2,10 +2,9 @@ import pathlib
 import pickle
 from typing import Type, Mapping, Tuple, FrozenSet
 
-from anagrams.frozen_counter import FrozenCounter
+from anagrams.count_letters import CountLettersResultStructure
 
-NameKey:Type = FrozenSet[Tuple[str,int]]
-NamesStructure:Type = Mapping[NameKey,set[str]]
+NamesStructure:Type = Mapping[CountLettersResultStructure,set[str]]
 
 NAMES_STORAGE_FILE_NAME:str = "processed_names.pickle"
 

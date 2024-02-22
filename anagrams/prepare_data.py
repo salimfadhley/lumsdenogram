@@ -9,15 +9,16 @@ import re
 import pandas
 
 from anagrams.config import SOURCE_TEXT
-from anagrams.frozen_counter import FrozenCounter
+from anagrams.count_letters import cl, char_subset
+# from anagrams.frozen_counter import FrozenCounter
 from anagrams.name_storage import store_names_structure, NamesStructure
 import anagrams.data
 
 log = logging.getLogger(__name__)
 
-def count_letters(text:str)->FrozenCounter:
-    assert isinstance(text, str), f"Invalid input {text}"
-    return FrozenCounter.from_str((re.sub(r"\s+", "", text.lower())))
+# def count_letters(text:str)->FrozenCounter:
+#     assert isinstance(text, str), f"Invalid input {text}"
+#     return FrozenCounter.from_str((re.sub(r"\s+", "", text.lower())))
 
 
 def get_first_name_frames()->Iterator[pandas.DataFrame]:
@@ -43,7 +44,7 @@ def get_names_dict(names:Iterator[str])->NamesStructure:
     for i, name in enumerate(names):
         if i % 1000 == 0:
             log.info(f'Processing {name}')
-        result.setdefault(count_letters(name).as_set(), set()).add(name)
+        result.setdefault(cl(name), set()).add(name)
     return result
 
 
@@ -56,8 +57,8 @@ def main():
 
     names_dict: NamesStructure = get_names_dict(iter(all_names))
     log.info(f"Got {len(names_dict)} first_names")
-    source_chars = count_letters(SOURCE_TEXT).as_set()
-    filtered_names_dict = {k:v for k,v in names_dict.items() if k.issubset(source_chars)}
+    source_chars = cl(SOURCE_TEXT)
+    filtered_names_dict = {k:v for k,v in names_dict.items() if char_subset(big=source_chars, small=k)}
     store_names_structure(filtered_names_dict)
 
 
